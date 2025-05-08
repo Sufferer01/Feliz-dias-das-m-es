@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nosso Amor em Memórias</title>
+  <!-- Fontes -->
+  <link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&family=Quicksand:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Georgia', 'Quicksand', serif;
+      background: linear-gradient(120deg, #ffb6e5 0%, #e0c3fc 50%, #fff 100%);
+      overflow-x: hidden;
+      position: relative;
+      z-index: 1;
+    }
+    #particles-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.32;
+    }
+    #hearts-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+    .flower {
+      position: fixed;
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0.7;
+      will-change: transform;
+    }
+    header {
+      color: #c04fb4;
+      text-shadow: 1px 1px 8px #fff, 0 0 16px #c04fb455;
+      font-size: 2.3em;
+      font-family: 'Georgia', serif;
+      font-weight: bold;
+      margin: 32px 0 10px 0;
+      letter-spacing: 1px;
+      text-align: center;
+      z-index: 2;
+      position: relative;
+      background: linear-gradient(90deg, #c04fb480 40%, #a88beb42 100%);
+      border-radius: 16px;
+      padding: 0.18em 0.35em;
+      box-shadow: 0 0 24px #fff4, 0 0 2px #d47fb955;
+      backdrop-filter: blur(2px);
+      user-select: none;
+    }
+    .slideshow-container {
+      position: relative;
+      width: 95vw;
+      max-width: 410px;
+      height: 65vw;
+      max-height: 380px;
+      margin: 30px auto 28px auto;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 8px 48px #d47fb955, 0 2px 16px #fff6;
+      background: rgba(255,255,255,0.22);
+      backdrop-filter: blur(8px);
+      border: 2.5px solid #d9a7e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .slide-img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 26px;
+      border: 4px solid #c04fb4cc;
+      opacity: 0;
+      z-index: 1;
+      transition: opacity 1.2s cubic-bezier(.4,0,.2,1);
+      filter: brightness(0.95) saturate(1.15) drop-shadow(0 4px 32px #c04fb466);
+      box-shadow: 0 0 0 7px #fff3, 0 2px 24px #c04fb422;
+      transform: scale(1.02);
+    }
+    .slide-img.active {
+      opacity: 1;
+      z-index: 2;
+      animation: imgFadeIn 2s, kenburns 12s linear alternate infinite;
+    }
+    @keyframes imgFadeIn {
+      from { filter: blur(6px) brightness(0.7); }
+      to { filter: blur(0) brightness(1); }
+    }
+    @keyframes kenburns {
+      0% {transform: scale(1.02);}
+      100% {transform: scale(1.07);}
+    }
+    .caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 22px 14px 16px 14px;
+      background: linear-gradient(0deg, rgba(60,18,80,0.82) 80%, transparent 100%);
+      color: #fff;
+      font-size: 1.14em;
+      font-family: 'Georgia', serif;
+      font-weight: 500;
+      text-shadow: 0 2px 18px #000a, 0 0 2px #b06dbe;
+      border-radius: 0 0 26px 26px;
+      min-height: 78px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      letter-spacing: 0.2px;
+      box-sizing: border-box;
+      transition: opacity 1s, transform 1s;
+      opacity: 1;
+      backdrop-filter: blur(4px);
+      background-blend-mode: lighten;
+    }
+    .caption.hide {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 1s, transform 1s;
+    }
+    /* Botão de música */
+    .music-control {
+      position: fixed;
+      bottom: 22px;
+      left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      z-index: 99;
+      pointer-events: none;
+    }
+    .music-btn {
+      pointer-events: all;
+      background: rgba(255,255,255,0.9);
+      border: 2px solid #c04fb4;
+      border-radius: 32px;
+      padding: 12px 34px;
+      color: #c04fb4;
+      font-family: 'Quicksand', 'Georgia', serif;
+      font-size: 1.09em;
+      font-weight: bold;
+      box-shadow: 0 3px 12px #d47fb933;
+      cursor: pointer;
+      outline: none;
+      transition: background .2s, color .2s, border .2s;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      user-select: none;
+      backdrop-filter: blur(2px);
+    }
+    .music-btn.playing {
+      background: #c04fb4;
+      color: #fff;
+      border-color: #fff;
+    }
+    .music-btn svg {
+      width: 23px; height: 23px;
+      vertical-align: middle;
+      filter: drop-shadow(0 0 3px #fff9);
+    }
+    /* Botões de compartilhar e carta */
+    #share-btn, #letter-btn {
+      position: fixed;
+      z-index: 100;
+      background: #fff8;
+      border-radius: 18px;
+      padding: 8px 18px;
+      font-size: 1.08em;
+      color: #c04fb4;
+      border: 2px solid #c04fb4;
+      box-shadow: 0 1px 4px #c04fb422;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+      font-family: 'Quicksand', 'Georgia', serif;
+      font-weight: 600;
+    }
+    #share-btn {
+      top: 18px;
+      right: 14px;
+    }
+    #letter-btn {
+      bottom: 80px;
+      right: 18px;
+    }
+    /* Modal da carta */
+    #letter-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: #0008;
+      z-index: 120;
+      align-items: center;
+      justify-content: center;
+    }
+    #letter-modal .letter-content {
+      background: #fff;
+      padding: 28px 18px;
+      border-radius: 22px;
+      max-width: 360px;
+      margin: auto;
+      color: #c04fb4;
+      font-family: 'Georgia',serif;
+      font-size: 1.08em;
+      box-shadow: 0 0 38px #c04fb444;
+      line-height: 1.5;
+    }
+    #letter-modal .close-letter {
+      display: block;
+      margin: 12px auto 0 auto;
+      background: #c04fb4;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 8px 22px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    /* Rodapé */
+    footer {
+      margin-top: 18vw;
+      text-align: center;
+      color: #c04fb4;
+      font-family: 'Dancing Script',cursive;
+      font-size: 1.2em;
+      letter-spacing: 1px;
+      z-index: 10;
+      position: relative;
+      background: #fff5;
+      border-radius: 13px;
+      display: inline-block;
+      padding: 6px 18px;
+      box-shadow: 0 2px 8px #fff8;
+    }
+    /* Responsivo */
+    @media (max-width: 600px) {
+      .slideshow-container {
+        width: 99vw; max-width: 99vw;
+        height: 62vw; max-height: 60vw;
+      }
+      header { font-size: 1.18em; margin-top: 14px;}
+      .caption { font-size: 0.97em; padding: 13px 4vw 9px 4vw;}
+      .music-btn { padding: 11px 13vw;}
+      #letter-btn { bottom: 75px; right: 8px; font-size: .98em;}
+      #share-btn { top: 8px; right: 8px;}
+    }
+    @media (hover:none) and (pointer:coarse) {
+      header { font-size: 1.02em;}
+      .caption { font-size: 0.93em;}
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particles-bg"></canvas>
+  <canvas id="hearts-bg"></canvas>
+  <!-- Flores flutuantes (JS) -->
+  <header>Nosso Amor em Memórias</header>
+  <button id="share-btn">Compartilhar</button>
+  <button id="letter-btn">Leia minha carta</button>
+  <main>
+    <div class="slideshow-container" id="slideshow"></div>
+  </main>
+  <audio id="bg-music" loop preload="auto" src="música.mp3"></audio>
+  <div class="music-control">
+    <button class="music-btn playing" id="music-toggle" aria-label="Tocar ou pausar música">
+      <svg id="music-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <rect x="5" y="5" width="5" height="14" rx="2" fill="currentColor"/>
+        <rect x="14" y="5" width="5" height="14" rx="2" fill="currentColor"/>
+      </svg>
+      <span id="music-label">Pausar Música</span>
+    </button>
+  </div>
+  <!-- Modal da carta -->
+  <div id="letter-modal">
+    <div class="letter-content">
+      Querida mãe,<br><br>
+      Hoje quero te agradecer por cada gesto, por cada palavra e por cada abraço que me fez crescer e acreditar no amor verdadeiro.<br>
+      Você é o coração da nossa família, minha inspiração e minha maior alegria.<br>
+      Que nossas memórias se multipliquem e que seu sorriso nunca falte em nossos dias.<br><br>
+      Te amo mais do que posso dizer.<br>
+      <span style="font-family:'Dancing Script',cursive;font-size:1.2em;">Com amor, [Seu Nome]</span>
+      <button class="close-letter">Fechar</button>
+    </div>
+  </div>
+  <footer>
+    Com todo meu amor, <span style="font-family:'Dancing Script',cursive;">[Seu Nome]</span>
+  </footer>
+  <script>
+    // --- SLIDESHOW CONFIG ---
+    const images = [
+      'img1.jpg','img2.jpg','img3.jpg','img4.jpg','img5.jpg',
+      'img6.jpg','img7.jpg','img8.jpg','img9.jpg','img10.jpg'
+    ];
+    const texts = [
+      "O amor de mãe é o primeiro lar dos nossos corações.",
+      "Com você aprendi a força da ternura e a doçura da coragem.",
+      "Seus abraços são as memórias mais quentes das minhas lembranças.",
+      "Cada sorriso seu é um raio de sol em meus dias.",
+      "Em cada gesto seu, encontro acolhimento e paz.",
+      "Mãe, você é poesia viva em cada momento compartilhado.",
+      "Seu cuidado moldou meu mundo e minha esperança.",
+      "Nos seus olhos, vejo todo o amor que existe no universo.",
+      "Por você, aprendi que o amor não tem limites nem tempo.",
+      "Nossa história é feita de laços eternos e memórias preciosas.",
+      "" // Para mensagem especial ao final
+    ];
+    const homenagem = "Mãe, nenhuma palavra será suficiente para dizer o quanto te amo. Obrigado por tudo!";
+
+    const slideshow = document.getElementById('slideshow');
+    let slides = [];
+    let currentImg = 0, currentText = 0;
+
+    // Cria imagens e captions
+    images.forEach((src, idx) => {
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = `Foto ${idx+1} - Memórias`;
+      img.className = 'slide-img' + (idx === 0 ? ' active' : '');
+      slideshow.appendChild(img);
+
+      if(idx === 0) {
+        const caption = document.createElement('div');
+        caption.className = 'caption';
+        caption.textContent = texts[0];
+        img.after(caption);
+        slides.push({img, caption});
+      } else {
+        slides.push({img});
+      }
+    });
+
+    // Troca imagens a cada 9s
+    setInterval(() => {
+      slides[currentImg].img.classList.remove('active');
+      currentImg = (currentImg+1)%slides.length;
+      slides[currentImg].img.classList.add('active');
+    }, 9000);
+
+    // Troca textos a cada 1min e move caption
+    setInterval(() => {
+      let oldCap = document.querySelector('.caption');
+      if(oldCap) { oldCap.classList.add('hide'); setTimeout(() => oldCap.remove(), 1000);}
+      currentText = (currentText+1)%texts.length;
+      let targetSlide = slides[(currentText)%slides.length];
+      const caption = document.createElement('div');
+      caption.className = 'caption hide';
+      if(currentText === texts.length-1) { // Mensagem especial com efeito typewriter
+        caption.innerHTML = '<span id="typewriter"></span>';
+      } else {
+        caption.textContent = texts[currentText];
+      }
+      targetSlide.img.after(caption);
+      setTimeout(()=>caption.classList.remove('hide'),80);
+
+      // Efeito typewriter para a mensagem final
+      if(currentText === texts.length-1) {
+        let i = 0;
+        function typeWriter() {
+          if (i < homenagem.length) {
+            document.getElementById('typewriter').innerHTML += homenagem.charAt(i);
+            i++;
+            setTimeout(typeWriter, 55);
+          }
+        }
+        typeWriter();
+      }
+    }, 60000);
+
+    // Música
+    const audio = document.getElementById('bg-music');
+    const musicBtn = document.getElementById('music-toggle');
+    const musicLabel = document.getElementById('music-label');
+    const musicIcon = document.getElementById('music-icon');
+    let playing = true;
+    audio.volume = 0.55;
+
+    // Autoplay (mobile e desktop)
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(()=>audio.play().catch(()=>{}), 700);
+    });
+
+    musicBtn.addEventListener('click', () => {
+      if(playing) audio.pause(); else audio.play();
+    });
+    audio.addEventListener('play', () => {
+      playing = true;
+      musicBtn.classList.add('playing');
+      musicLabel.textContent = "Pausar Música";
+      musicIcon.innerHTML = `
+        <rect x="5" y="5" width="5" height="14" rx="2" fill="currentColor"/>
+        <rect x="14" y="5" width="5" height="14" rx="2" fill="currentColor"/>
+      `;
+    });
+    audio.addEventListener('pause', () => {
+      playing = false;
+      musicBtn.classList.remove('playing');
+      musicLabel.textContent = "Tocar Música";
+      musicIcon.innerHTML = `
+        <path d="M9 19V6l12-2v13" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="6" cy="18" r="3" />
+        <circle cx="18" cy="16" r="3" />
+      `;
+    });
+
+    // Compartilhar
+    document.getElementById('share-btn').onclick = function() {
+      if(navigator.share) {
+        navigator.share({
+          title: 'Nosso Amor em Memórias',
+          text: 'Olha essa homenagem especial para o Dia das Mães!',
+          url: window.location.href
+        });
+      } else {
+        alert('Copie o link para compartilhar: ' + window.location.href);
+      }
+    }
+
+    // Carta Modal
+    document.getElementById('letter-btn').onclick = function() {
+      document.getElementById('letter-modal').style.display = 'flex';
+    }
+    document.querySelector('.close-letter').onclick = function() {
+      document.getElementById('letter-modal').style.display = 'none';
+    }
+    document.getElementById('letter-modal').onclick = function(e) {
+      if(e.target === this) this.style.display = 'none';
+    }
+
+    // ---- EFEITO DE PARTÍCULAS ----
+    const canvas = document.getElementById('particles-bg');
+    const ctx = canvas.getContext('2d');
+    let width, height, particlesArr;
+    function resizeCanvas() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    function createParticles() {
+      particlesArr = [];
+      for(let i=0;i<38;i++) {
+        let radius = Math.random()*16+8;
+        let color = Math.random()>0.5 ? "#f7aef8cc" : "#b388ffcc";
+        particlesArr.push({
+          x: Math.random()*width,
+          y: Math.random()*height,
+          vx: (Math.random()-0.5)*0.16,
+          vy: (Math.random()-0.36)*0.13,
+          r: radius,
+          color,
+          alpha: Math.random()*0.7+0.25
+        });
+      }
+    }
+    function drawParticles() {
+      ctx.clearRect(0,0,width,height);
+      for(let p of particlesArr) {
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 20;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+        // Move
+        p.x += p.vx; p.y += p.vy;
+        if(p.x > width+p.r) p.x = -p.r;
+        if(p.x < -p.r) p.x = width+p.r;
+        if(p.y > height+p.r) p.y = -p.r;
+        if(p.y < -p.r) p.y = height+p.r;
+      }
+      drawHearts();
+      requestAnimationFrame(drawParticles);
+    }
+    resizeCanvas();
+    createParticles();
+    drawParticles();
+
+    // ---- CORAÇÕES ANIMADOS ----
+    const heartCanvas = document.getElementById('hearts-bg');
+    const heartCtx = heartCanvas.getContext('2d');
+    function resizeHeartsCanvas() {
+      heartCanvas.width = window.innerWidth;
+      heartCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeHeartsCanvas);
+    let hearts = [];
+    function createHearts() {
+      hearts = [];
+      for(let i=0;i<9;i++){
+        hearts.push({
+          x: Math.random()*window.innerWidth,
+          y: window.innerHeight+Math.random()*100,
+          size: 24+Math.random()*18,
+          speed: 0.18+Math.random()*0.11,
+          alpha: 0.4+Math.random()*0.5
+        });
+      }
+    }
+    function drawHearts(){
+      heartCtx.clearRect(0,0,heartCanvas.width,heartCanvas.height);
+      for(let h of hearts){
+        heartCtx.save();
+        heartCtx.globalAlpha = h.alpha;
+        heartCtx.font = `${h.size}px serif`;
+        heartCtx.fillStyle = "#ff6090";
+        heartCtx.shadowColor = "#fff";
+        heartCtx.shadowBlur = 12;
+        heartCtx.fillText("❤", h.x, h.y);
+        heartCtx.restore();
+        h.y -= h.speed;
+        if(h.y < -40) {
+          h.x = Math.random()*window.innerWidth;
+          h.y = window.innerHeight+Math.random()*80;
+        }
+      }
+      requestAnimationFrame(drawHearts);
+    }
+    resizeHeartsCanvas();
+    createHearts();
+    drawHearts();
+
+    // ---- FLORES FLUTUANDO ----
+    function createFloatingFlowers() {
+      const flowerImgs = ['flor1.png', 'flor2.png', 'flor3.png'];
+      for(let i=0;i<5;i++){
+        let f=document.createElement('img');
+        f.src=flowerImgs[i%3];
+        f.className = 'flower';
+        f.style.left=Math.random()*90+'vw';
+        f.style.bottom='-'+(20+Math.random()*40)+'px';
+        f.style.width=24+Math.random()*22+'px';
+        f.style.opacity=0.6+Math.random()*0.3;
+        document.body.appendChild(f);
+        (function animateFlower(f){
+          let y = parseFloat(f.style.bottom);
+          function move(){
+            y+=0.12+Math.random()*0.07;f.style.bottom=y+'px';
+            if(y<window.innerHeight+40) requestAnimationFrame(move);
+            else {f.style.bottom='-'+(20+Math.random()*40)+'px';move();}
+          } move();
+        })(f);
+      }
+    }
+    createFloatingFlowers();
+  </script>
+</body>
+</html>
