@@ -11,7 +11,7 @@
       min-height: 100vh;
       margin: 0;
       font-family: 'Georgia', 'Quicksand', serif;
-      background: linear-gradient(120deg, #ffb6e5 0%, #e0c3fc 50%, #fff 100%);
+      background: linear-gradient(135deg, #131313 0%, #181826 100%) !important;
       overflow-x: hidden;
       position: relative;
       z-index: 1;
@@ -36,6 +36,23 @@
       pointer-events: none;
       opacity: 0.7;
       will-change: transform;
+    }
+    /* Chuva de Emojis */
+    .emoji-rain {
+      position: fixed;
+      top: -48px;
+      z-index: 9;
+      pointer-events: none;
+      animation: emoji-fall 4.3s linear infinite;
+      user-select: none;
+      will-change: transform;
+      filter: drop-shadow(0 2px 8px #0006);
+    }
+    @keyframes emoji-fall {
+      to {
+        transform: translateY(105vh) rotate(24deg) scale(1.05);
+        opacity: 0.88;
+      }
     }
     header {
       color: #c04fb4;
@@ -65,7 +82,7 @@
       border-radius: 28px;
       overflow: hidden;
       box-shadow: 0 8px 48px #d47fb955, 0 2px 16px #fff6;
-      background: rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.10);
       backdrop-filter: blur(8px);
       border: 2.5px solid #d9a7e1;
       display: flex;
@@ -269,7 +286,7 @@
   <main>
     <div class="slideshow-container" id="slideshow"></div>
   </main>
-  <audio id="bg-music" loop preload="auto" src="música.mp3"></audio>
+  <audio id="bg-music" src="música.mp3" loop preload="auto" autoplay></audio>
   <div class="music-control">
     <button class="music-btn playing" id="music-toggle" aria-label="Tocar ou pausar música">
       <svg id="music-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -287,12 +304,12 @@
       Você é o coração da nossa família, minha inspiração e minha maior alegria.<br>
       Que nossas memórias se multipliquem e que seu sorriso nunca falte em nossos dias.<br><br>
       Te amo mais do que posso dizer.<br>
-      <span style="font-family:'Dancing Script',cursive;font-size:1.2em;">Com amor, [Seu Nome]</span>
+      <span style="font-family:'Dancing Script',cursive;font-size:1.2em;">Com amor, Fabrício</span>
       <button class="close-letter">Fechar</button>
     </div>
   </div>
   <footer>
-    Com todo meu amor, <span style="font-family:'Dancing Script',cursive;">[Seu Nome]</span>
+    Com todo meu amor, <span style="font-family:'Dancing Script',cursive;">Fabrício</span>
   </footer>
   <script>
     // --- SLIDESHOW CONFIG ---
@@ -555,6 +572,34 @@
       }
     }
     createFloatingFlowers();
+
+    // ---- CHUVA DE EMOJIS BONITOS ----
+    const emojis = ['💖', '🌸', '💐', '😍', '🦋', '🌟', '🥰', '💝', '🌷', '✨'];
+    const emojiRainCount = 22;
+    function createEmojiRain() {
+      for (let i = 0; i < emojiRainCount; i++) {
+        const emoji = document.createElement('div');
+        emoji.className = 'emoji-rain';
+        emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        emoji.style.left = Math.random() * 98 + 'vw';
+        emoji.style.animationDelay = (Math.random()*3) + 's';
+        emoji.style.fontSize = (28 + Math.random()*22) + 'px';
+        emoji.style.opacity = (0.7 + Math.random()*0.3);
+        document.body.appendChild(emoji);
+
+        emoji.addEventListener('animationend', () => {
+          emoji.style.left = Math.random() * 98 + 'vw';
+          emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+          emoji.style.fontSize = (28 + Math.random()*22) + 'px';
+          emoji.style.opacity = (0.7 + Math.random()*0.3);
+          emoji.style.animationDelay = (Math.random()*3) + 's';
+          emoji.classList.remove('emoji-rain');
+          void emoji.offsetWidth; // reflow
+          emoji.classList.add('emoji-rain');
+        });
+      }
+    }
+    createEmojiRain();
   </script>
 </body>
 </html>
